@@ -1,0 +1,40 @@
+# Python and Flask specific
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyi
+*.egg-info/
+backend-server2/venv/
+backend-server1/venv/
+venv/
+.env
+
+# Environment configuration
+.env
+
+# IDE-specific files
+.idea/
+.vscode/
+
+# Compiled files
+*.pyc
+*.pyo
+*.pyd
+
+# Log files
+*.log
+
+# Dependency directories
+venv/
+env/
+lib/
+
+# Build and distribution directories
+build/
+dist/
+*.egg-info/
+
+# Miscellaneous
+*.swp
+.DS_Store

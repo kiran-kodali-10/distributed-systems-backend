@@ -2,6 +2,9 @@ from flask import Flask, request, jsonify
 import os
 from config import Config
 import requests
+import logging
+
+
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -11,6 +14,22 @@ app.name = "flask-server-2"
 
 # Set the configuration variable based on the environment variable
 app.config['ARGUMENT'] = os.environ.get('server_name')
+
+#Clear the Flask's default logger
+app.logger.handlers.clear()
+# Set the logging level
+app.logger.setLevel(logging.DEBUG)
+
+# Create a log handler for console output
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+
+# Create a log formatter
+formatter = logging.Formatter(' %(asctime)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+
+# Add the log handler to the application logger
+app.logger.addHandler(console_handler)
 
 job_categories = ["Development", "Marketing", "Sales", "Business"]
 publisher_data = [
@@ -27,7 +46,7 @@ publisher_data = [
 ]
 subscriber_data = [
     {
-        "subscriber_name": "Silvi", 
+        "subscriber_name": "Silvi",
         "subscribed_categories": ["Development", "Marketing"]
     }
 ]
@@ -43,8 +62,19 @@ def hello():
 
 @app.route('/api/subscribe', methods=['GET'])
 def subscribe():
+    data = request.json
+    subscriber_name = data["subscriber_name"]
+    subscribed_category = data["subscribed_category"]
+    subscriber_details = []
+    for subscriber in subscriber_data:
+        if subscriber["subscriber_name"] in subscriber_name:
+            subscriber_details.append(subscriber)
+            if subscribed_category not in subscriber["subscribed_categories"]:
+                subscriber["subscribed_categories"].append(subscribed_category)
 
-    return "subscriber"
+    app.logger.info(
+        f"{app.name} - {subscriber_name} has subscribed to the {subscribed_category} category.")
+    return jsonify(subscriber_details)
 
 
 # API to set whatever the pubslisher has published and return
@@ -59,6 +89,8 @@ request object format:
     }
 }
 '''
+
+
 @app.route('/api/setPublisherData',  methods=['POST'])
 def set_published_data():
     data = request.json
@@ -84,14 +116,16 @@ def set_published_data():
         subscriber_name = subscriber_dict["subscriber_name"]
         subscribed_categories = subscriber_dict["subscribed_categories"]
         if job_category in subscribed_categories:
-            print(f"{subscriber_name} has subscribed to the {job_category} category.")
+            app.logger.info(
+                f"{app.name} - {subscriber_name} has subscribed to the {job_category} category.")
             response_data.append({
                 "subscriber_name": subscriber_name,
                 "job_posts": new_job_post
             })
         else:
-            print(f"{subscriber_name} has not subscribed to the {job_category} category.")
-    
+            app.logger.info(
+                f"{subscriber_name} has not subscribed to the {job_category} category.")
+
     return jsonify(response_data)
 
 

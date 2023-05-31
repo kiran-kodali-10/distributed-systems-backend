@@ -31,7 +31,11 @@ console_handler.setFormatter(formatter)
 # Add the log handler to the application logger
 app.logger.addHandler(console_handler)
 
-job_categories = ["Development", "Marketing", "Sales", "Business"]
+all_job_categories = ["Development", "Marketing", "Sales", "Business"]
+master_job_categories =["Marketing", "Sales"]
+
+master_node = "http://172.31.10.181:8080/"
+
 publisher_data = [
     {
         "job_category": "Development",
@@ -66,6 +70,13 @@ def subscribe():
     subscriber_name = data["subscriber_name"]
     subscribed_category = data["subscribed_category"]
     subscriber_details = []
+    # if subscribed_category in master_job_categories:
+    #     node = app.name
+    #     send_data = {
+    #         node,
+    #         data
+    #     }
+    #     response = requests.get("http://172.31.10.181:8080/api/subscribe_master", json=send_data)
     for subscriber in subscriber_data:
         if subscriber["subscriber_name"] in subscriber_name:
             subscriber_details.append(subscriber)
@@ -98,9 +109,18 @@ def set_published_data():
     target_dict = None
     new_job_post = data["new_job_post"]
 
+    # check if the job category is for this node or not
+    if job_category in master_job_categories:
+        node = app.name
+        send_data = {
+            data,
+            node
+        }
+        response = requests.get(master_node+"api/setPublisherData", json=send_data)
+
     # Add data to the publisher
-    if job_category not in job_categories:
-        job_categories.append(job_category)
+    if job_category not in all_job_categories:
+        all_job_categories.append(job_category)
 
     for category_dict in publisher_data:
         if category_dict["job_category"] == job_category:
@@ -143,4 +163,4 @@ def get_subscribed_data():
 
 if __name__ == '__main__':
     print(app.config['ARGUMENT'])
-    app.run(port=8080, debug=True, host="0.0.0.0")
+    app.run(port=8080, host="0.0.0.0",debug=True)

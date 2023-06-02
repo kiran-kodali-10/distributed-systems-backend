@@ -50,7 +50,7 @@ subscriber_data = [
 @app.route('/')
 def hello():
     print(app.name)
-    print(app.config['ARGUMENT'])
+    # print(app.config['ARGUMENT'])
     response = requests.get("http://172.31.10.181:8080/api/subscribe")
     return 'Hello, Flask!'+response.text
 

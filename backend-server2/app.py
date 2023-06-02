@@ -104,7 +104,8 @@ request object format:
 
 @app.route('/api/setPublisherData',  methods=['POST'])
 def set_published_data():
-    data = request.json
+    request_data = request.json
+    data = request_data["data"]
     job_category = data["job_category"]
     target_dict = None
     new_job_post = data["new_job_post"]

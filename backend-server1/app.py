@@ -67,8 +67,8 @@ def subscribe():
     subscriber_name = data["subscriber_name"]
     subscribed_category = data["subscribed_category"]
     subscriber_details = []
-    if subscribed_category in master_job_categories:
-        response = requests.get("http://172.31.10.181:8080/api/subscribe")
+    # if subscribed_category in master_job_categories:
+    #     response = requests.get("http://172.31.10.181:8080/api/subscribe")
     for subscriber in subscriber_data:
         if subscriber["subscriber_name"] in subscriber_name:
             subscriber_details.append(subscriber)

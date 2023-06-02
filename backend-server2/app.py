@@ -116,7 +116,9 @@ def set_published_data():
             data,
             node
         }
+
         response = requests.get(master_node+"api/setPublisherData", json=send_data)
+        return jsonify(response)
 
     # Add data to the publisher
     if job_category not in all_job_categories:

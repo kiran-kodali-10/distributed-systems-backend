@@ -1,13 +1,9 @@
 from flask import Flask, request, jsonify
-from config import Config
 import requests
 import logging
 import DSM
 
-
 app = Flask(__name__)
-app.config.from_object(Config)
-
 
 app.name = "flask-server-1"
 

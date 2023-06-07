@@ -44,6 +44,10 @@ def hello():
 def post_published_data():
     data = request.get_json()
 
+    if data["jobCategory"] not in handle_categories:
+        response = requests.post(master_node+"/api/publish", json=data)
+        return response
+
     DSM.JOB_POSTS.append(data)
     print(DSM.JOB_POSTS)
 
@@ -52,6 +56,12 @@ def post_published_data():
     response.status_code = 200
 
     return response
+
+
+def send_data_for_subscriber():
+    data = request.get_json()
+    jobCategory = data["jobCategory"]
+
 
 
 ''' TO DO: Confirm query params and proceed '''
@@ -72,31 +82,31 @@ def post_subscribed_data():
     jobCategory = data["jobCategory"]
     existing_subscriber = False
 
-    # if jobCategory in handle_categories:
+    if jobCategory in handle_categories:
 
-    for subscriber in DSM.SUBSCRIBER_DATA:
-        if subscriber["subscriberName"].lower() == subscriberName.lower():
-            subscriber["subscribed"].append(jobCategory)
-            existing_subscriber = True
-            break
+        for subscriber in DSM.SUBSCRIBER_DATA:
+            if subscriber["subscriberName"].lower() == subscriberName.lower():
+                subscriber["subscribed"].append(jobCategory)
+                existing_subscriber = True
+                break
 
-    if not existing_subscriber:
-        DSM.SUBSCRIBER_DATA.append({
-            "subscriberName": data["subscriberName"],
-            "subscribed": [data["jobCategory"]]
+        if not existing_subscriber:
+            DSM.SUBSCRIBER_DATA.append({
+                "subscriberName": data["subscriberName"],
+                "subscribed": [data["jobCategory"]]
+            })
+
+        response = jsonify({
+            "message": "Subscribed Successfully ",
+            "name": str(app.name)
+
         })
-
-    response = jsonify({
-        "message": "Subscribed Successfully ",
-        "name": str(app.name)
-
-    })
-    response.status_code = 200
-    return response
-    # else:
+        response.status_code = 200
+        return response
+    else:
         # send the request
-        # response = requests.post(url=master_node+"/api/subscribe", json=data)
-        # return response
+        response = requests.post(url=master_node+"/api/subscribe", json=data)
+        return response
 
 @app.route('/api/subscribe', methods=['GET'])
 def get_subscribed_data():
@@ -120,6 +130,7 @@ def get_subscribed_data():
         response.append(append_object)
                     
     return jsonify(response)
+
 
 
 @app.errorhandler(Exception)

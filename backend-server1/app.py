@@ -41,6 +41,10 @@ def hello():
 def post_published_data():
     data = request.get_json()
 
+    if data["jobCategory"] not in handle_categories:
+        response = requests.post(master_node_2+"/api/publish", json=data)
+        return response
+    
     DSM.JOB_POSTS.append(data)
     print(DSM.JOB_POSTS)
 

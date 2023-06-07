@@ -6,7 +6,7 @@ SUBSCRIBER_DATA = [
     },
     {
         "subscriberName": "test-1",
-        "subscribed": ["Development", "Marketing"]
+        "subscribed": ["Development"]
     },
 
 ]

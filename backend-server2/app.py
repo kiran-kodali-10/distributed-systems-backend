@@ -28,7 +28,7 @@ console_handler.setFormatter(formatter)
 app.logger.addHandler(console_handler)
 
 all_job_categories = ["Development", "Marketing", "Sales", "Business"]
-handle_categories = ["Marketing", "Sales"]
+handle_categories = ["Development", "Marketing"]
 
 master_node = "http://172.31.10.181:8080"
 

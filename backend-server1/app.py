@@ -30,7 +30,7 @@ app.logger.addHandler(console_handler)
 all_job_categories = ["Development", "Marketing", "Sales", "Business"]
 handle_categories = ["Marketing", "Sales"]
 
-master_node = "http://172.31.10.181:8080"
+master_node_2 = "http://172.31.9.96:8080"
 
 
 @app.route('/')
@@ -95,7 +95,7 @@ def post_subscribed_data():
         return response
     else:
         # send the request
-        response = requests.post(url=master_node+"/api/subscribe", json=data)
+        response = requests.post(url=master_node_2+"/api/subscribe", json=data)
         return response
 
 @app.route('/api/subscribe', methods=['GET'])

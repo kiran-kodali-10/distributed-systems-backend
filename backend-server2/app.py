@@ -69,31 +69,31 @@ def post_subscribed_data():
     jobCategory = data["jobCategory"]
     existing_subscriber = False
 
-    if jobCategory in handle_categories:
+    # if jobCategory in handle_categories:
 
-        for subscriber in DSM.SUBSCRIBER_DATA:
-            if subscriber["subscriberName"].lower() == subscriberName.lower():
-                subscriber["subscribed"].append(jobCategory)
-                existing_subscriber = True
-                break
+    for subscriber in DSM.SUBSCRIBER_DATA:
+        if subscriber["subscriberName"].lower() == subscriberName.lower():
+            subscriber["subscribed"].append(jobCategory)
+            existing_subscriber = True
+            break
 
-        if not existing_subscriber:
-            DSM.SUBSCRIBER_DATA.append({
-                "subscriberName": data["subscriberName"],
-                "subscribed": [data["jobCategory"]]
-            })
-
-        response = jsonify({
-            "message": "Subscribed Successfully ",
-            "name": str(app.name)
-
+    if not existing_subscriber:
+        DSM.SUBSCRIBER_DATA.append({
+            "subscriberName": data["subscriberName"],
+            "subscribed": [data["jobCategory"]]
         })
-        response.status_code = 200
-        return response
-    else:
+
+    response = jsonify({
+        "message": "Subscribed Successfully ",
+        "name": str(app.name)
+
+    })
+    response.status_code = 200
+    return response
+    # else:
         # send the request
-        response = requests.post(url=master_node+"/api/subscribe", json=data)
-        return response
+        # response = requests.post(url=master_node+"/api/subscribe", json=data)
+        # return response
 
 @app.route('/api/subscribe', methods=['GET'])
 def get_subscribed_data():

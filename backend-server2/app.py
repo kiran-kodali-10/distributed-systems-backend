@@ -2,10 +2,13 @@ from flask import Flask, request, jsonify
 import requests
 import logging
 import DSM
+from flask_cors import CORS
+
 
 
 app = Flask(__name__)
 
+CORS(app)
 app.name = "flask-server-2"
 
 # Clear the Flask's default logger

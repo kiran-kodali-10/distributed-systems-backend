@@ -23,8 +23,8 @@ console_handler.setFormatter(formatter)
 # Add the log handler to the application logger
 app.logger.addHandler(console_handler)
 
-all_job_categories = ["Development", "Marketing", "Sales", "Business"]
-handle_categories = ["Marketing", "Sales"]
+all_job_categories = ["DEVELOPMENT", "MARKETING", "SALES", "BUSINESS"]
+handle_categories = ["MARKETING", "SALES"]
 
 master_node_2 = "http://172.31.5.101:8080"
 
@@ -46,7 +46,7 @@ def post_published_data():
         return response
     
     DSM.JOB_POSTS.append(data)
-    print(DSM.JOB_POSTS)
+    # print(DSM.JOB_POSTS)
 
     response = jsonify({'message': 'Job posted successfullly',
                         'name': str(app.name)})

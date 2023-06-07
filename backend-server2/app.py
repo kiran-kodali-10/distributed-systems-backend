@@ -27,10 +27,10 @@ console_handler.setFormatter(formatter)
 # Add the log handler to the application logger
 app.logger.addHandler(console_handler)
 
-all_job_categories = ["Development", "Marketing", "Sales", "Business"]
-handle_categories = ["Development", "Marketing"]
+all_job_categories = ["DEVELOPMENT", "MARKETING", "SALES", "BUSINESS"]
+handle_categories = ["DEVELOPMENT", "MARKETING"]
 
-master_node = "http://172.31.9.96:8080"
+master_node = "http://54.67.32.100:8080"
 
 
 @app.route('/')
@@ -45,8 +45,10 @@ def post_published_data():
     data = request.get_json()
 
     if data["jobCategory"] not in handle_categories:
-        response = requests.post(master_node+"/api/publish", json=data)
-        return response
+        print("inside if")
+        response_data = requests.post(master_node+"/api/publish", json=data)
+        data = response_data.json()
+        return jsonify(data)
 
     DSM.JOB_POSTS.append(data)
     print(DSM.JOB_POSTS)

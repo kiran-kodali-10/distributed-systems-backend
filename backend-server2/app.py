@@ -27,7 +27,7 @@ app.logger.addHandler(console_handler)
 all_job_categories = ["Development", "Marketing", "Sales", "Business"]
 handle_categories = ["Development", "Marketing"]
 
-master_node = "http://172.31.5.101:8080"
+master_node = "http://172.31.9.96:8080"
 
 
 @app.route('/')

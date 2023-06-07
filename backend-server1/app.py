@@ -32,8 +32,9 @@ master_node_2 = "http://172.31.9.96:8080"
 @app.route('/')
 def hello():
     print(app.name)
-    # response = requests.get("http://172.31.10.181:8080/api/subscribe")
-    return 'Hello, Flask!'+str(app.name)
+    response = app.name
+    # response = requests.get(master_node_2)
+    return 'Hello, Flask!'+str(app.name)+ " "+str(response)
 
 
 @app.route('/api/publish', methods=['POST'])

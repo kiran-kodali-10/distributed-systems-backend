@@ -1,9 +1,8 @@
 from flask import Flask, request, jsonify
-import os
 from config import Config
 import requests
 import logging
-
+import DSM
 
 
 app = Flask(__name__)
@@ -12,10 +11,7 @@ app.config.from_object(Config)
 
 app.name = "flask-server-2"
 
-# Set the configuration variable based on the environment variable
-app.config['ARGUMENT'] = os.environ.get('server_name')
-
-#Clear the Flask's default logger
+# Clear the Flask's default logger
 app.logger.handlers.clear()
 # Set the logging level
 app.logger.setLevel(logging.DEBUG)
@@ -32,138 +28,110 @@ console_handler.setFormatter(formatter)
 app.logger.addHandler(console_handler)
 
 all_job_categories = ["Development", "Marketing", "Sales", "Business"]
-master_job_categories =["Marketing", "Sales"]
+handle_categories = ["Marketing", "Sales"]
 
-master_node = "http://172.31.10.181:8080/"
-
-publisher_data = [
-    {
-        "job_category": "Development",
-        "job_posts": [
-            {
-                "role_name": "",
-                "job_description": "",
-                "publisher_name": ""
-            }
-        ]
-    }
-]
-subscriber_data = [
-    {
-        "subscriber_name": "Silvi",
-        "subscribed_categories": ["Development", "Marketing"]
-    }
-]
+master_node = "http://172.31.10.181:8080"
 
 
 @app.route('/')
 def hello():
     print(app.name)
-    print(app.config['ARGUMENT'])
-    response = requests.get("http://172.31.10.181:8080/api/subscribe")
-    return 'Hello, Flask!'+response.text
+    # response = requests.get("http://172.31.10.181:8080/api/subscribe")
+    return 'Hello, Flask!'+str(app.name)
 
+
+@app.route('/api/publish', methods=['POST'])
+def post_published_data():
+    data = request.get_json()
+
+    DSM.JOB_POSTS.append(data)
+    print(DSM.JOB_POSTS)
+
+    response = jsonify({'message': 'Job posted successfullly',
+                        'name': str(app.name)})
+    response.status_code = 200
+
+    return response
+
+
+''' TO DO: Confirm query params and proceed '''
+
+
+@app.route('/api/publish', methods=['GET'])
+def get_subscribe_data():
+    # send the job posts of that subscriber.
+    data = request.args
+    print(data)
+    return None
+
+
+@app.route('/api/subscribe', methods=['POST'])
+def post_subscribed_data():
+    data = request.get_json()
+    subscriberName = data["subscriberName"]
+    jobCategory = data["jobCategory"]
+    existing_subscriber = False
+
+    if jobCategory in handle_categories:
+
+        for subscriber in DSM.SUBSCRIBER_DATA:
+            if subscriber["subscriberName"].lower() == subscriberName.lower():
+                subscriber["subscribed"].append(jobCategory)
+                existing_subscriber = True
+                break
+
+        if not existing_subscriber:
+            DSM.SUBSCRIBER_DATA.append({
+                "subscriberName": data["subscriberName"],
+                "subscribed": [data["jobCategory"]]
+            })
+
+        response = jsonify({
+            "message": "Subscribed Successfully ",
+            "name": str(app.name)
+
+        })
+        response.status_code = 200
+        return response
+    else:
+        # send the request
+        response = requests.post(url=master_node+"/api/subscribe", json=data)
+        return response
 
 @app.route('/api/subscribe', methods=['GET'])
-def subscribe():
-    data = request.json
-    subscriber_name = data["subscriber_name"]
-    subscribed_category = data["subscribed_category"]
-    subscriber_details = []
-    # if subscribed_category in master_job_categories:
-    #     node = app.name
-    #     send_data = {
-    #         node,
-    #         data
-    #     }
-    #     response = requests.get("http://172.31.10.181:8080/api/subscribe_master", json=send_data)
-    for subscriber in subscriber_data:
-        if subscriber["subscriber_name"] in subscriber_name:
-            subscriber_details.append(subscriber)
-            if subscribed_category not in subscriber["subscribed_categories"]:
-                subscriber["subscribed_categories"].append(subscribed_category)
-
-    app.logger.info(
-        f"{app.name} - {subscriber_name} has subscribed to the {subscribed_category} category.")
-    return jsonify(subscriber_details)
-
-
-# API to set whatever the pubslisher has published and return
-'''
-request object format:
-{
-    job_category: "",
-    new_job_post: {
-        "role_name": "",
-        "job_description": "",
-        "publisher_name": ""
-    }
-}
-'''
-
-
-@app.route('/api/setPublisherData',  methods=['POST'])
-def set_published_data():
-    request_data = request.json
-    data = request_data["data"]
-    job_category = data["job_category"]
-    target_dict = None
-    new_job_post = data["new_job_post"]
-
-    # check if the job category is for this node or not
-    if job_category in master_job_categories:
-        node = app.name
-        send_data = {
-            data,
-            node
-        }
-
-        response = requests.get(master_node+"api/setPublisherData", json=send_data)
-        return jsonify(response)
-
-    # Add data to the publisher
-    if job_category not in all_job_categories:
-        all_job_categories.append(job_category)
-
-    for category_dict in publisher_data:
-        if category_dict["job_category"] == job_category:
-            target_dict = category_dict
-            break
-    if target_dict is not None:
-        target_dict["job_posts"].append(new_job_post)
-
-    # whoever has subscribed to that job category, update them with the new data
-    response_data = []
-
-    for subscriber_dict in subscriber_data:
-        subscriber_name = subscriber_dict["subscriber_name"]
-        subscribed_categories = subscriber_dict["subscribed_categories"]
-        if job_category in subscribed_categories:
-            app.logger.info(
-                f"{app.name} - {subscriber_name} has subscribed to the {job_category} category.")
-            response_data.append({
-                "subscriber_name": subscriber_name,
-                "job_posts": new_job_post
-            })
-        else:
-            app.logger.info(
-                f"{subscriber_name} has not subscribed to the {job_category} category.")
-
-    return jsonify(response_data)
-
-
-@app.route('/api/getSubscribedData', methods=['POST'])
 def get_subscribed_data():
-    data = request.json
-    job_category = data["jobCategory"]
+    response = []
+    count = 0
+    # return the list of objects with subscriber name and the list of job posts
+    for subscriber in DSM.SUBSCRIBER_DATA:
+        subscriberName = subscriber["subscriberName"]
+        subscribed = subscriber["subscribed"]
+        append_object = {
+            "subscriberName": subscriberName,
+            "jobPosts": []
+        }
+        print(count+1)
 
-    # Process the request data and create a new user
-    # ...
-    response = {'message': 'User created successfully',
-                'name': str(app.name), 'arg': str(app.config['ARGUMENT'])}
+        for jobPost in DSM.JOB_POSTS:
+            for subscribedCategory in subscribed:
+                print(f"JOB POST: {jobPost}")
+                if jobPost["jobCategory"].lower() in subscribedCategory.lower():
+                    append_object["jobPosts"].append(jobPost)
+        response.append(append_object)
+                    
     return jsonify(response)
 
 
+@app.errorhandler(Exception)
+def server_error(error):
+    app.logger.error(error)
+    response = jsonify({
+        'error': 'Internal Server error',
+        'message': 'An unexpected error occurred on the server.'
+    })
+    response.status_code = 500
+    return response
+
+
 if __name__ == '__main__':
-    print(app.config['ARGUMENT'])
-    app.run(port=8080, host="0.0.0.0",debug=True)
+    app.run(port=8080, host="0.0.0.0", debug=True)

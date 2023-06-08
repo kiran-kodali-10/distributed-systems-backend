@@ -71,7 +71,7 @@ def send_data_for_subscriber():
                 f'job-category: {jobCategory} and new job cate: {new_job["jobCategory"]}')
             if jobCategory.lower() == new_job["jobCategory"].lower():
                 response.append(new_job)
-        response.append({"message": str(app.name)})
+        response.append([{"message": str(app.name)}])
         return jsonify(response)
     else:
         response_data = requests.get(master_node_2+"/gs/subscribe", params={"companyName": jobCategory})

@@ -3,6 +3,7 @@ import json
 import time
 import logging
 from urllib.parse import urlencode
+import re
 
 
 # Configure the logger to get the logs
@@ -33,9 +34,11 @@ def sendRequest(host_id, port, request):
     json_payload = decoded_response[start_index:end_index+1]
 
     json_payload = json_payload.strip()
-    message ='[{"message":"flask-server-2"}]'
-    # logging.info(f'message: {message}, payload: {json_payload}')
-    if json_payload == message:
+    message ='flask-server-2'
+    message2 = 'No new Data'
+    # striped_payload = remove_lines(json_payload)
+    # logging.info(f'message: {striped_payload}, payload: {json_payload}')
+    if message in json_payload or message2 in json_payload:
         logging.info("No new Data available")
     else:
          logging.info(f'New Data available: {json_payload}')

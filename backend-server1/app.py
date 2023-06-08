@@ -16,7 +16,7 @@ app.logger.setLevel(logging.DEBUG)
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.DEBUG)
 
-time_out=0
+time_out=4
 
 # Create a log formatter
 formatter = logging.Formatter(' %(asctime)s - %(levelname)s - %(message)s')

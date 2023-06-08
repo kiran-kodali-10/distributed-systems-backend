@@ -82,7 +82,7 @@ def get_subscribe_data():
     # send the job posts of that subscriber.
     data = request.args
     response =[]
-    # print(data)
+    print(data)
     for jobPost in DSM.JOB_POSTS:
         companyName = jobPost["companyName"]
         if companyName.lower() == data["companyName"].lower():
@@ -148,7 +148,7 @@ def get_subscribed_data():
 
 
 
-@app.errorhandler(Exception)
+# @app.errorhandler(Exception)
 def server_error(error):
     app.logger.error(error)
     response = jsonify({

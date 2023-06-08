@@ -25,7 +25,7 @@ def sendRequest(host_id, port, request):
         response += response_data
 
     # Logging info of the client entry
-    logging.info("SUBSCRIBER 1 subscribed to Job Category:{ Business, Sales }")
+    logging.info("SUBSCRIBER 4 subscribed to Job Category:{ Business, Sales }")
     decoded_response = response.decode()
 
     start_index = decoded_response.find("[")

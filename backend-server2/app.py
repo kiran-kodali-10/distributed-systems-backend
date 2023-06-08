@@ -18,7 +18,7 @@ app.logger.setLevel(logging.DEBUG)
 # Create a log handler for console output
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.DEBUG)
-
+time_out = 4
 # Create a log formatter
 formatter = logging.Formatter(' %(asctime)s - %(levelname)s - %(message)s')
 console_handler.setFormatter(formatter)
@@ -60,25 +60,37 @@ def post_published_data():
 
     return response
 
+def validate_sequence(sequence,clientName):
+
+    if sequence == str(time_out):
+        app.logger.info(f'{clientName} died, please restart')
 
 @app.route('/gs/subscribe', methods=['GET'])
 def send_data_for_subscriber():
     data = request.args
     jobCategory = data["jobCategory"]
+    sequence = data["sequence"]
+    clientName = data['clientName']
+    validate_sequence(sequence, clientName)
     response = []
     if jobCategory in handle_categories:
         if len(new_jobs_queue) == 0:
             return jsonify([{"message": "No new Data"}])
         for new_job in new_jobs_queue:
-            print(
-                f'job-category: {jobCategory} and new job cate: {new_job["jobCategory"]}')
+            # print(
+            #     f'job-category: {jobCategory} and new job cate: {new_job["jobCategory"]}')
+
             if jobCategory.lower() == new_job["jobCategory"].lower():
                 response.append(new_job)
         response.append({"message": str(app.name)})
         return jsonify(response)
     else:
         response_data = requests.get(
-            master_node+"/gs/subscribe", params={"companyName": jobCategory})
+            master_node+"/gs/subscribe", 
+            params={"companyName": jobCategory, 
+                    "sequence": data["sequence"],
+                    "clientName": data["clientName"]
+                    })
         return jsonify(response_data.json())
 
 @app.route('/api/publish', methods=['GET'])

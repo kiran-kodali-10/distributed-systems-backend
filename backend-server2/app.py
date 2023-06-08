@@ -29,7 +29,7 @@ app.logger.addHandler(console_handler)
 
 all_job_categories = ["DEVELOPMENT", "MARKETING", "SALES", "BUSINESS"]
 handle_categories = ["DEVELOPMENT", "MARKETING"]
-
+new_jobs_queue = []
 master_node = "http://54.67.32.100:8080"
 
 
@@ -44,14 +44,15 @@ def hello():
 def post_published_data():
     data = request.get_json()
 
+    new_jobs_queue.append(data)
+    print(new_jobs_queue)
     if data["jobCategory"] not in handle_categories:
-        print("inside if")
+        # print("inside if")
         response_data = requests.post(master_node+"/api/publish", json=data)
         data = response_data.json()
         return jsonify(data)
 
     DSM.JOB_POSTS.append(data)
-    print(DSM.JOB_POSTS)
 
     response = jsonify({'message': 'Job posted successfullly',
                         'name': str(app.name)})
@@ -60,21 +61,33 @@ def post_published_data():
     return response
 
 
+@app.route('/gs/subscribe', methods=['GET'])
 def send_data_for_subscriber():
     data = request.get_json()
     jobCategory = data["jobCategory"]
+    response = []
+    print(f'new_jobs_queue inside gs/subscribe: {new_jobs_queue}')
+    if len(new_jobs_queue) == 0:
+        return jsonify({"message": "No new Data"})
+    for new_job in new_jobs_queue:
+        print(f'job-category: {jobCategory} and new job cate: {new_job["jobCategory"]}')
+        if jobCategory.lower() == new_job["jobCategory"].lower():
+            response.append(new_job)
 
-
+    return jsonify(response)
 
 ''' TO DO: Confirm query params and proceed '''
-
-
 @app.route('/api/publish', methods=['GET'])
 def get_subscribe_data():
     # send the job posts of that subscriber.
     data = request.args
-    print(data)
-    return None
+    response =[]
+    # print(data)
+    for jobPost in DSM.JOB_POSTS:
+        companyName = jobPost["companyName"]
+        if companyName.lower() == data["companyName"].lower():
+            response.append(jobPost)
+    return jsonify(response)
 
 
 @app.route('/api/subscribe', methods=['POST'])
@@ -126,7 +139,7 @@ def get_subscribed_data():
 
         for jobPost in DSM.JOB_POSTS:
             for subscribedCategory in subscribed:
-                print(f"JOB POST: {jobPost}")
+                # print(f"JOB POST: {jobPost}")
                 if jobPost["jobCategory"].lower() in subscribedCategory.lower():
                     append_object["jobPosts"].append(jobPost)
         response.append(append_object)

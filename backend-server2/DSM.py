@@ -1,12 +1,12 @@
-JOB_CATEGORIES = ["Development", "Marketing", "Sales", "Business"]
+JOB_CATEGORIES = ["DEVELOPMENT", "MARKETING", "SALES", "BUSINESS"]
 SUBSCRIBER_DATA = [
     {
         "subscriberName": "Silvi",
-        "subscribed": ["Development", "Marketing"]
+        "subscribed": ["DEVELOPMENT", "MARKETING"]
     },
     {
         "subscriberName": "test-1",
-        "subscribed": ["Development"]
+        "subscribed": ["DEVELOPMENT"]
     },
 
 ]
@@ -16,19 +16,19 @@ JOB_POSTS = [
         "jobTitle": "sde-1",
         "jobDescription": "software developer",
         "companyName": "Kiran",
-        "jobCategory": "Development"
+        "jobCategory": "DEVELOPMENT"
     },
     {
         "jobTitle": "sde-2",
         "jobDescription": "software developer",
         "companyName": "Kiran",
-        "jobCategory": "Development"
+        "jobCategory": "DEVELOPMENT"
     },
     {
         "jobTitle": "analyst",
         "jobDescription": "marketing analyst",
         "companyName": "Kiran",
-        "jobCategory": "marketing"
+        "jobCategory": "MARKETING"
     },
     {
         "jobTitle": "test-1",

@@ -26,6 +26,8 @@ app.logger.addHandler(console_handler)
 all_job_categories = ["DEVELOPMENT", "MARKETING", "SALES", "BUSINESS"]
 handle_categories = ["MARKETING", "SALES"]
 
+new_jobs_queue = []
+
 master_node_2 = "http://172.31.5.101:8080"
 
 
@@ -34,17 +36,19 @@ def hello():
     print(app.name)
     response = app.name
     # response = requests.get(master_node_2)
-    return 'Hello, Flask!'+str(app.name)+ " "+str(response)
+    return 'Hello, Flask!'+str(app.name) + " "+str(response)
 
 
 @app.route('/api/publish', methods=['POST'])
 def post_published_data():
     data = request.get_json()
 
+    new_jobs_queue.append(data)
+
     if data["jobCategory"] not in handle_categories:
         response = requests.post(master_node_2+"/api/publish", json=data)
         return response
-    
+
     DSM.JOB_POSTS.append(data)
     # print(DSM.JOB_POSTS)
 
@@ -54,16 +58,39 @@ def post_published_data():
 
     return response
 
-
-''' TO DO: Confirm query params and proceed '''
+@app.route('/gs/subscribe', methods=['GET'])
+def send_data_for_subscriber():
+    data = request.args
+    jobCategory = data["jobCategory"]
+    response = []
+    if jobCategory in handle_categories:
+        if len(new_jobs_queue) == 0:
+            return jsonify({"message": "No new Data"})
+        for new_job in new_jobs_queue:
+            print(
+                f'job-category: {jobCategory} and new job cate: {new_job["jobCategory"]}')
+            if jobCategory.lower() == new_job["jobCategory"].lower():
+                response.append(new_job)
+        response.append({"message": str(app.name)})
+        return jsonify(response)
+    else:
+        response_data = requests.get(master_node_2+"/gs/subscribe", params={"companyName": jobCategory})
+        return jsonify(response_data.json())
 
 
 @app.route('/api/publish', methods=['GET'])
 def get_subscribe_data():
     # send the job posts of that subscriber.
     data = request.args
-    print(data)
-    return None
+    companyName = data["companyName"]
+    response = []
+    # print(data)
+    for jobPost in DSM.JOB_POSTS:
+        companyName = jobPost["companyName"]
+        if companyName.lower() == companyName.lower():
+            response.append(jobPost)
+    return jsonify(response)
+
 
 
 @app.route('/api/subscribe', methods=['POST'])
@@ -99,6 +126,7 @@ def post_subscribed_data():
         response = requests.post(url=master_node_2+"/api/subscribe", json=data)
         return response
 
+
 @app.route('/api/subscribe', methods=['GET'])
 def get_subscribed_data():
     response = []
@@ -119,11 +147,28 @@ def get_subscribed_data():
                 if jobPost["jobCategory"].lower() in subscribedCategory.lower():
                     append_object["jobPosts"].append(jobPost)
         response.append(append_object)
-                    
+
     return jsonify(response)
 
 
-@app.errorhandler(Exception)
+@app.route('/api/unsubscribe', methods=['DELETE'])
+def unsubscribe():
+    data = request.get_json()
+    jobCategory = data["jobCategory"]
+    subscriberName = data["subscriberName"]
+
+    for subscriber in DSM.SUBSCRIBER_DATA:
+        if subscriber["subscriberName"].lower() == subscriberName.lower() and jobCategory in subscriber["subscribed"]:
+            subscriber["subscribed"].remove(jobCategory.upper())
+            break
+    
+    return jsonify({
+        'message': "unsubscribed successfully",
+        'name': str(app.name)
+    })
+
+
+# @app.errorhandler(Exception)
 def server_error(error):
     app.logger.error(error)
     response = jsonify({

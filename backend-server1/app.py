@@ -65,13 +65,13 @@ def send_data_for_subscriber():
     response = []
     if jobCategory in handle_categories:
         if len(new_jobs_queue) == 0:
-            return jsonify({"message": "No new Data"})
+            return jsonify([{"message": "No new Data"}])
         for new_job in new_jobs_queue:
             print(
                 f'job-category: {jobCategory} and new job cate: {new_job["jobCategory"]}')
             if jobCategory.lower() == new_job["jobCategory"].lower():
                 response.append(new_job)
-        response.append([{"message": str(app.name)}])
+        response.append({"message": str(app.name)})
         return jsonify(response)
     else:
         response_data = requests.get(master_node_2+"/gs/subscribe", params={"companyName": jobCategory})

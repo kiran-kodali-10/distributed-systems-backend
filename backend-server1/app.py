@@ -24,7 +24,7 @@ console_handler.setFormatter(formatter)
 app.logger.addHandler(console_handler)
 
 all_job_categories = ["DEVELOPMENT", "MARKETING", "SALES", "BUSINESS"]
-handle_categories = ["MARKETING", "SALES"]
+handle_categories = ["BUSINESS", "SALES"]
 
 new_jobs_queue = []
 

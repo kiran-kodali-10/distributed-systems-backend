@@ -29,7 +29,7 @@ app.logger.addHandler(console_handler)
 all_job_categories = ["DEVELOPMENT", "MARKETING", "SALES", "BUSINESS"]
 handle_categories = ["DEVELOPMENT", "MARKETING"]
 new_jobs_queue = []
-master_node = "http://54.67.32.100:8080"
+master_node = "http://172.31.9.96:8080"
 
 
 @app.route('/')
@@ -134,7 +134,7 @@ def post_subscribed_data():
 @app.route('/api/subscribe', methods=['GET'])
 def get_subscribed_data():
     response = []
-    
+
     # return the list of objects with subscriber name and the list of job posts
     for subscriber in DSM.SUBSCRIBER_DATA:
         subscriberName = subscriber["subscriberName"]

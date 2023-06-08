@@ -68,7 +68,7 @@ def send_data_for_subscriber():
     response = []
     if jobCategory in handle_categories:
         if len(new_jobs_queue) == 0:
-            return jsonify({"message": "No new Data"})
+            return jsonify([{"message": "No new Data"}])
         for new_job in new_jobs_queue:
             print(
                 f'job-category: {jobCategory} and new job cate: {new_job["jobCategory"]}')
@@ -150,7 +150,7 @@ def get_subscribed_data():
                 if jobPost["jobCategory"].lower() in subscribedCategory.lower():
                     append_object["jobPosts"].append(jobPost)
         response.append(append_object)
-
+    
     return jsonify(response)
 
 

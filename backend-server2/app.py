@@ -63,7 +63,8 @@ def post_published_data():
 
 @app.route('/gs/subscribe', methods=['GET'])
 def send_data_for_subscriber():
-    data = request.get_json()
+    data = request.args
+
     jobCategory = data["jobCategory"]
     response = []
     print(f'new_jobs_queue inside gs/subscribe: {new_jobs_queue}')

@@ -82,7 +82,8 @@ def send_data_for_subscriber():
 
             if jobCategory.lower() == new_job["jobCategory"].lower():
                 response.append(new_job)
-        response.append({"message": str(app.name)})
+                new_jobs_queue.pop()
+        # response.append({"message": str(app.name)})
         return jsonify(response)
     else:
         response_data = requests.get(

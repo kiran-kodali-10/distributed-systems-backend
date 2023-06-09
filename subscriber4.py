@@ -37,7 +37,9 @@ def sendRequest(host_id, port, request):
     message ='flask-server-2'
     message2 = 'No new Data'
     # striped_payload = remove_lines(json_payload)
-    # logging.info(f'message: {striped_payload}, payload: {json_payload}')
+
+    # logging.info(f'message: {message2}, payload: {json_payload}')
+    # logging.info(f"payload")
     if message in json_payload or message2 in json_payload:
         logging.info("No new Data available")
     else:

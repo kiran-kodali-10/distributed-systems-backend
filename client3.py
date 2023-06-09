@@ -3,6 +3,7 @@ import json
 import time
 import logging
 from urllib.parse import urlencode
+import re
 
 
 # Configure the logger to get the logs
@@ -25,7 +26,7 @@ def sendRequest(host_id, port, request):
         response += response_data
 
     # Logging info of the client entry
-    logging.info("SUBSCRIBER 1 subscribed to Job Category:{ Business, Sales }")
+    logging.info("SUBSCRIBER 4 subscribed to Job Category:Marketing")
     decoded_response = response.decode()
 
     start_index = decoded_response.find("[")
@@ -33,9 +34,13 @@ def sendRequest(host_id, port, request):
     json_payload = decoded_response[start_index:end_index+1]
 
     json_payload = json_payload.strip()
-    message ='[{"message":"flask-server-2"}]'
-    # logging.info(f'message: {message}, payload: {json_payload}')
-    if json_payload == message:
+    message ='flask-server-2'
+    message2 = 'No new Data'
+    # striped_payload = remove_lines(json_payload)
+
+    # logging.info(f'message: {message2}, payload: {json_payload}')
+    # logging.info(f"payload")
+    if message in json_payload or message2 in json_payload:
         logging.info("No new Data available")
     else:
          logging.info(f'New Data available: {json_payload}')
@@ -45,11 +50,11 @@ def sendRequest(host_id, port, request):
     client_socket.close() # Close the socket connection
 
 # Specify the host and port of the server
-# host_id = "13.52.218.34"
-host_id = "localhost"
+host_id = "13.52.218.34"
+# host_id = "localhost"
 port = 8080
 
-subscribed_job_categories = ["DEVELOPMENT"]
+subscribed_job_categories = ["MARKETING"]
 
 base_url = "/gs/subscribe"
 
@@ -70,10 +75,7 @@ while True:
 
         # Send the HTTP request
         sendRequest(host_id, port, request)
-        time.sleep(2)   
-    counter+=1
-    if counter == 5:
-        logging.info(f'Node crashed')
-        break
+        time.sleep(3)   
+    
     
 

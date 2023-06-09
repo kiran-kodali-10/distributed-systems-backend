@@ -27,7 +27,7 @@ console_handler.setFormatter(formatter)
 app.logger.addHandler(console_handler)
 
 all_job_categories = ["DEVELOPMENT", "MARKETING", "SALES", "BUSINESS"]
-handle_categories = ["DEVELOPMENT", "MARKETING"]
+handle_categories = ["DEVELOPMENT", "MARKETING", "SALES"]
 new_jobs_queue = []
 master_node = "http://172.31.9.96:8080"
 

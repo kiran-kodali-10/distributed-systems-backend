@@ -26,7 +26,7 @@ def sendRequest(host_id, port, request):
         response += response_data
 
     # Logging info of the client entry
-    logging.info("SUBSCRIBER 4 subscribed to Job Category:{ Business, Sales }")
+    logging.info("SUBSCRIBER 4 subscribed to Job Category:DEVELOPMENT")
     decoded_response = response.decode()
 
     start_index = decoded_response.find("[")
@@ -50,8 +50,8 @@ def sendRequest(host_id, port, request):
     client_socket.close() # Close the socket connection
 
 # Specify the host and port of the server
-# host_id = "13.52.218.34"
-host_id = "localhost"
+host_id = "13.52.218.34"
+# host_id = "localhost"
 port = 8080
 
 subscribed_job_categories = ["DEVELOPMENT"]

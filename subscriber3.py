@@ -26,7 +26,7 @@ def sendRequest(host_id, port, request):
         response += response_data
 
     # Logging info of the client entry
-    logging.info("SUBSCRIBER 4 subscribed to Job Category:Marketing")
+    logging.info("SUBSCRIBER 3 subscribed to Job Category:Marketing")
     decoded_response = response.decode()
 
     start_index = decoded_response.find("[")
@@ -44,7 +44,7 @@ def sendRequest(host_id, port, request):
         logging.info("No new Data available")
     else:
          logging.info(f'New Data available: {json_payload}')
-         logging.info("SUBSCRIBER 4 GOT THE NEW POSTINGS.")
+         logging.info("SUBSCRIBER 3 GOT THE NEW POSTINGS.")
 
 
     client_socket.close() # Close the socket connection
@@ -60,7 +60,7 @@ base_url = "/gs/subscribe"
 
 # Send the HTTP requests with different dynamic data
 counter = 1
-clientName = "subscriber-4"
+clientName = "subscriber-3"
 while True:
     for job_category in subscribed_job_categories:
         query_params = {
